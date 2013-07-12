@@ -16,6 +16,7 @@ mkdir -p ${tmpdir}/site
 cp ${ROOT}/rabbitmq.xml ${tmpdir}/root/opt/smartdc/etc/rabbitmq/rabbitmq.xml
 cp ${ROOT}/rabbitmq-env.conf ${tmpdir}/root/opt/local/etc/rabbitmq/rabbitmq-env.conf
 cp ${ROOT}/rabbitmq.config ${tmpdir}/root/opt/local/etc/rabbitmq/rabbitmq.config
+cp -r ${ROOT}/sapi_manifests ${tmpdir}/root/opt/smartdc/etc/rabbitmq/sapi_manifests
 
 (cd ${tmpdir}; tar -jcf ${ROOT}/${RELEASE_TARBALL} root site)
 
