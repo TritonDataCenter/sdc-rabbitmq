@@ -18,7 +18,7 @@ RELEASE_TARBALL=rabbitmq-pkg-$(RABBITMQ_PUBLISH_VERSION).tar.bz2
 
 .PHONY: all
 
-all:
+all: sdc-scripts
 
 release: $(RELEASE_TARBALL)
 
