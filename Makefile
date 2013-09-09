@@ -35,3 +35,5 @@ publish:
 
 clean:
 	rm -fr rabbitmq-pkg-*.tar.bz2
+
+sdc-scripts: deps/sdc-scripts/.git
