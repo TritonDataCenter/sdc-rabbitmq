@@ -9,14 +9,15 @@ set -o xtrace
 
 PATH=/opt/local/bin:/opt/local/sbin:/usr/bin:/usr/sbin
 
-CONFIG_AGENT_LOCAL_MANIFESTS_DIRS=/opt/smartdc/etc/rabbitmq/sapi_manifests
+role=rabbitmq
+CONFIG_AGENT_LOCAL_MANIFESTS_DIRS=/opt/smartdc/etc/$role/sapi_manifests
 
 # Include common utility functions (then run the boilerplate)
 source /opt/smartdc/boot/lib/util.sh
 sdc_common_setup
 
 # Cookie to identify this as a SmartDC zone and its role
-mkdir -p /var/smartdc/rabbitmq
+mkdir -p /var/smartdc/$role
 
 echo "Finishing setup of rabbitmq zone"
 
@@ -43,16 +44,22 @@ svccfg import ${manifest}
 projadd -c "Rabbitmq settings" -U rabbitmq -G rabbitmq \
     -K "process.max-file-descriptor=(basic,65535,deny)" \
     rabbitmq
-svccfg -s rabbitmq setprop method_context/project=rabbitmq
-svcadm refresh rabbitmq
+svccfg -s $role setprop method_context/project=rabbitmq
+svcadm refresh $role
 
 su - rabbitmq -c "/opt/local/sbin/rabbitmqctl -n rabbit@$(zonename) stop"
 
-svcadm disable rabbitmq
+svcadm disable $role
 # HOME must be set for 'erlexec' (used in rabbitmq-plugins)
 export HOME=/root
 rabbitmq-plugins enable rabbitmq_management
-svcadm enable rabbitmq
+svcadm enable $role
+
+sdc_log_rotation_add amon-agent /var/svc/log/*amon-agent*.log 1g
+sdc_log_rotation_add config-agent /var/svc/log/*config-agent*.log 1g
+sdc_log_rotation_add registrar /var/svc/log/*registrar*.log 1g
+sdc_log_rotation_add $role /var/svc/log/*$role*.log 1g
+sdc_log_rotation_setup_end
 
 # All done, run boilerplate end-of-setup
 sdc_setup_complete
