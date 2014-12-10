@@ -34,6 +34,14 @@ echo "Finishing setup of rabbitmq zone"
 echo 'SERVER_ERL_ARGS="$SERVER_ERL_ARGS +sbt u"' \
     >> /opt/local/etc/rabbitmq/rabbitmq-env.conf
 
+if ! grep "HEAD-2187" /opt/local/etc/rabbitmq/rabbitmq-env.conf >/dev/null; then
+    cat >>/opt/local/etc/rabbitmq/rabbitmq-env.conf <<EOF
+
+# Ensure we don't keep state across restarts, per HEAD-2187
+rm -rf /var/db/rabbitmq
+EOF
+fi
+
 # Setup .erlang.cookie symlink
 if [[ ! -L /root/.erlang.cookie ]]; then
 	ln -s /var/db/rabbitmq/.erlang.cookie /root/.erlang.cookie
@@ -54,6 +62,13 @@ svccfg -s $role setprop method_context/project=rabbitmq
 svcadm refresh $role
 
 su - rabbitmq -c "/opt/local/sbin/rabbitmqctl -n rabbit@$(zonename) stop"
+
+# Swap in the replacement for rabbitmq-server which clears /var/db/rabbitmq
+# on startup (HEAD-2187).
+if [[ -f /opt/local/sbin/rabbitmq-server.sdc ]]; then
+    cp /opt/local/sbin/rabbitmq-server /opt/local/sbin/rabbitmq-server.ori
+    cp /opt/local/sbin/rabbitmq-server.sdc /opt/local/sbin/rabbitmq-server
+fi
 
 svcadm disable $role
 # HOME must be set for 'erlexec' (used in rabbitmq-plugins)

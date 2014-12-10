@@ -20,12 +20,14 @@ ROOT=$(pwd)
 tmpdir="/tmp/rabbitmq.$$"
 mkdir -p ${tmpdir}/root/opt/smartdc/etc/rabbitmq
 mkdir -p ${tmpdir}/root/opt/local/etc/rabbitmq
+mkdir -p ${tmpdir}/root/opt/local/sbin
 mkdir -p ${tmpdir}/site
 mkdir -p ${tmpdir}/root/opt/smartdc/boot/scripts
 
 cp ${ROOT}/rabbitmq.xml ${tmpdir}/root/opt/smartdc/etc/rabbitmq/rabbitmq.xml
 cp ${ROOT}/rabbitmq-env.conf ${tmpdir}/root/opt/local/etc/rabbitmq/rabbitmq-env.conf
 cp ${ROOT}/rabbitmq.config ${tmpdir}/root/opt/local/etc/rabbitmq/rabbitmq.config
+cp ${ROOT}/rabbitmq-server.sdc ${tmpdir}/root/opt/local/sbin/rabbitmq-server.sdc
 cp -r ${ROOT}/sapi_manifests ${tmpdir}/root/opt/smartdc/etc/rabbitmq/sapi_manifests
 
 # update/create sdc-scripts
