@@ -34,14 +34,6 @@ echo "Finishing setup of rabbitmq zone"
 echo 'SERVER_ERL_ARGS="$SERVER_ERL_ARGS +sbt u"' \
     >> /opt/local/etc/rabbitmq/rabbitmq-env.conf
 
-if ! grep "HEAD-2187" /opt/local/etc/rabbitmq/rabbitmq-env.conf >/dev/null; then
-    cat >>/opt/local/etc/rabbitmq/rabbitmq-env.conf <<EOF
-
-# Ensure we don't keep state across restarts, per HEAD-2187
-rm -rf /var/db/rabbitmq
-EOF
-fi
-
 # Setup .erlang.cookie symlink
 if [[ ! -L /root/.erlang.cookie ]]; then
 	ln -s /var/db/rabbitmq/.erlang.cookie /root/.erlang.cookie
