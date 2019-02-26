@@ -5,45 +5,54 @@
 #
 
 #
-# Copyright (c) 2014, Joyent, Inc.
+# Copyright (c) 2019, Joyent, Inc.
 #
 
 NAME=rabbitmq
-
-ifeq ($(VERSION), "")
-    @echo "Use gmake"
-endif
-
 TAR = tar
+RELEASE_TARBALL=$(NAME)-pkg-$(STAMP).tar.gz
 
-ifeq ($(TIMESTAMP),)
-    TIMESTAMP=$(shell date -u "+%Y%m%dT%H%M%SZ")
+BASE_IMAGE_UUID = fd2cc906-8938-11e3-beab-4359c665ac99
+BUILDIMAGE_NAME = $(NAME)
+BUILDIMAGE_DESC	= SDC RabbitMQ
+BUILDIMAGE_PKGSRC = \
+	perl-5.14.2nb3 \
+	iodbc-3.52.7 \
+	libffi-3.0.9nb1 \
+	python27-2.7.2nb2 \
+	py27-setuptools-0.6c11nb1 \
+	py27-simplejson-2.1.1 \
+	erlang-14.1.4nb1 \
+	rabbitmq-2.7.1
+AGENTS		= amon config registrar
+
+ENGBLD_USE_BUILDIMAGE	= true
+ENGBLD_REQUIRE		:= $(shell git submodule update --init deps/eng)
+include ./deps/eng/tools/mk/Makefile.defs
+TOP ?= $(error Unable to access eng.git submodule Makefiles.)
+
+ifeq ($(shell uname -s),SunOS)
+    include ./deps/eng/tools/mk/Makefile.agent_prebuilt.defs
 endif
-
-RABBITMQ_PUBLISH_VERSION := $(shell git symbolic-ref HEAD | \
-      awk -F / '{print $$3}')-$(TIMESTAMP)-g$(shell \
-                git describe --all --long | awk -F '-g' '{print $$NF}')
-
-RELEASE_TARBALL=rabbitmq-pkg-$(RABBITMQ_PUBLISH_VERSION).tar.bz2
 
 .PHONY: all
-
 all: sdc-scripts
 
-release: $(RELEASE_TARBALL)
+.PHONY: release
+release: all $(RELEASE_TARBALL)
 
 $(RELEASE_TARBALL):
 	TAR=$(TAR) bash package.sh $(RELEASE_TARBALL)
 
 publish:
-	@if [[ -z "$(BITS_DIR)" ]]; then \
-      echo "error: 'BITS_DIR' must be set for 'publish' target"; \
-      exit 1; \
-    fi
-	mkdir -p $(BITS_DIR)/rabbitmq
-	cp $(RELEASE_TARBALL) $(BITS_DIR)/rabbitmq/$(RELEASE_TARBALL)
+	mkdir -p $(ENGBLD_BITS_DIR)/rabbitmq
+	cp $(RELEASE_TARBALL) $(ENGBLD_BITS_DIR)/rabbitmq/$(RELEASE_TARBALL)
 
-clean:
-	rm -fr rabbitmq-pkg-*.tar.bz2
 
 sdc-scripts: deps/sdc-scripts/.git
+
+ifeq ($(shell uname -s),SunOS)
+    include ./deps/eng/tools/mk/Makefile.agent_prebuilt.targ
+endif
+include ./deps/eng/tools/mk/Makefile.deps
+include ./deps/eng/tools/mk/Makefile.targ

@@ -6,7 +6,7 @@
 #
 
 #
-# Copyright (c) 2014, Joyent, Inc.
+# Copyright (c) 2019, Joyent, Inc.
 #
 
 set -o xtrace
@@ -38,6 +38,6 @@ mkdir -p ${tmpdir}/root/opt/smartdc/boot
 cp -R ${ROOT}/deps/sdc-scripts/* ${tmpdir}/root/opt/smartdc/boot/
 cp -R ${ROOT}/boot/* ${tmpdir}/root/opt/smartdc/boot/
 
-(cd ${tmpdir}; tar -jcf ${ROOT}/${RELEASE_TARBALL} root site)
+(cd ${tmpdir}; gtar -I pigz -cf ${ROOT}/${RELEASE_TARBALL} root site)
 
 rm -rf ${tmpdir}
