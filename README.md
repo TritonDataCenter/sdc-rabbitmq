@@ -6,12 +6,13 @@
 
 <!--
     Copyright (c) 2014, Joyent, Inc.
+    Copyright 2023 MNX Cloud, Inc.
 -->
 
 # sdc-rabbitmq
 
-This repository is part of the Joyent SmartDataCenter project (SDC).  For
+This repository is part of the Triton Data Center project (Triton).  For
 contribution guidelines, issues, and general documentation, visit the main
-[SDC](http://github.com/joyent/sdc) project page.
+[Triton](http://github.com/TritonDataCenter/triton) project page.
 
-This repo contains the bits that build the 'rabbitmq' image for SDC.
+This repo contains the bits that build the 'rabbitmq' image for Triton.
